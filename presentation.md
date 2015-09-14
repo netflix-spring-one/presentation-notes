@@ -9,7 +9,13 @@
 
 # Simple Spring Boot App
 
+* Slide [Collection<SpringBootApplication>]
+* Orient audience to the code
 * Start Membership from IDE
+* Start Recommendations from IDE
+* Execute `curl http://localhost:8081/api/recommendations/jschneider`
+* Execute `curl http://localhost:8081/api/recommendations/twicksell`
+* Execute `curl http://localhost:8081/api/recommendations/unknown`
 
 * Recommendations contains a hard-coded link to a DNS name for membership
 * With hard-coded service links, multiple instances of a service need to run behind a load balancer (e.g. ELB) and
@@ -24,18 +30,19 @@ the load balancer needs to have a route registered with it.
 * Start Eureka with `docker run -d -p 8671:8671 --name eureka netflixspring/sample-eureka` so that other docker containers can link to it
 
 * Add `compile 'org.springframework.cloud:spring-cloud-starter-eureka'`
-* Add `eureka.client.serviceUrl.defaultZone: http://localhost:8761/eureka/` to application.yml
+* Add `eureka.client.serviceUrl.defaultZone: http://localhost:9000/eureka/` to application.yml (TRAILING SLASH IS IMPORTANT!)
 * Add `@EnableEurekaClient`
 * Remove RestTemplate bean
 * Start Recommendations
-* Execute `curl -x PUT http://localhost:8671/eureka/recommendations/{instanceId}/` to take instance out of service ... TODO fix this
-* [Eureka REST Operations](https://github.com/Netflix/eureka/wiki/Eureka-REST-operations)
+* Show both instances are up in Eureka server at http://localhost:9000
+
+* Mention that Eureka is fault tolerant.  We deploy at least one per AZ per region
 
 ---
 
 # Relaunch Membership With Eureka with Docker
 
-* docker run -d -p 8080:8080 --link eureka --name membership netflixspring/sample-membership
+* docker run -d -p 9000:9000 --link eureka --name membership netflixspring/sample-membership
 
 ---
 
@@ -90,7 +97,7 @@ Set<Movie> recommendationFallback(String user) {
     return familyRecommendations;
 }
 ```
-* Add: `commandProperties={@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "100")}`
+* Add: `commandProperties={@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000")}`
 * Add: `String mapping = (String) RequestContextHolder.currentRequestAttributes().getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);`
 * Add: `@HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"),`
 
@@ -98,12 +105,20 @@ Set<Movie> recommendationFallback(String user) {
 
 ---
 
+# Hystrix dashboard
+
+* Start HystrixDashboard
+* Start Recommendations with newly added Hystrix command
+* In browser, navigate to http://localhost:9001/hystrix
+* In text box, enter http://localhost:8001/hystrix.stream
+* Execute JMeter run against Recommendations
+
+---
+
 # Turbine
 
-* Start Turbine
-* Remove `@EnableHystrixDashboard`
-* Wire hystrix commands to Turbine
-* Demo centralized circuit breaker in Turbine
+* Start Turbine from IDE
+* In hystrix dashboard, enter: http://localhost:9002/turbine.stream
 
 ---
 
@@ -118,6 +133,8 @@ consisting of `{uri}.200`.  Would have to first itemize all such `{uri}`.
 * Add a bad tag and see what happens in /metrics
 
 * Walkthrough of underlying code
+
+* Tell the superbowl thundering herd anecdote while we wait for spectator metrics to appear
 
 ---
 
