@@ -91,6 +91,11 @@ interface MembershipRepository {
     Member findMember(@PathVariable("user") String user);
 }
 ```
+* Remove Autowired RestTemplate from RecommendationsController
+* Add `@Autowired MembershipRepository membershipRepository`
+* Change RestTemplate call to `membershipRepository.findMember(user)`
+
+* Not used internally - talk to Adrian Cole?
 
 ---
 
