@@ -14,9 +14,9 @@
 * Start Eureka from `./gradlew bootRun > out.log`
 * Start Membership from `./gradlew bootRun > out.log`
 * Start Recommendations from IDE
-* Execute `curl http://localhost:8081/api/recommendations/jschneider`
-* Execute `curl http://localhost:8081/api/recommendations/twicksell`
-* Execute `curl http://localhost:8081/api/recommendations/unknown`
+* Execute `curl http://localhost:8001/api/recommendations/jschneider`
+* Execute `curl http://localhost:8001/api/recommendations/twicksell`
+* Execute `curl http://localhost:8001/api/recommendations/unknown`
 
 * Recommendations contains a hard-coded link to a DNS name for membership
 * With hard-coded service links, multiple instances of a service need to run behind a load balancer (e.g. ELB) and
@@ -164,8 +164,13 @@ compile 'com.netflix.spectator:spectator-ext-sandbox:0.30.0'
 * Add `@EnableAtlas`
 * Restart Membership
 * Execute JMeter script
-* List tags
-* Retrieve a single png
+* List tags http://localhost:7101/api/v1/tags
+* Retrieve a single png 
+```
+http://localhost:7101/api/v1/graph?q=name,rest,:eq,:avg
+http://localhost:7101/api/v1/graph?q=name,rest,:eq,statistic,count,:eq,:and,:avg
+http://localhost:7101/api/v1/graph?q=name,rest,:eq,statistic,count,:eq,:and,:avg,(,bucket,),:by
+```
 * Demonstrate really basic stack language
 * Demonstrate dashboard generation
 * Requirements for standing up a production-ready Atlas
