@@ -133,6 +133,9 @@ Set<Movie> recommendationFallback(String user) {
 
 # Turbine (Jon)
 
+* (git checkout tags/hystrix)
+* Add `eureka.instance.appGroupName: sample` to application.yml
+* Remove `eureka.instance.hostname: theone` -- because Turbine is going to try to connect to this as a resolvable host
 * Start Turbine from IDE
 * In hystrix dashboard, enter: http://localhost:9002/turbine.stream?cluster=SAMPLE
 
@@ -140,6 +143,9 @@ Set<Movie> recommendationFallback(String user) {
 
 # Spectator Metrics (Taylor)
 
+* (git checkout tags/turbine)
+* Add `@Autowired RestTemplate restTemplate;` back to RecommendationsController
+* Change membership call to `restTemplate.getForObject("http://members/api/member/{user}", Member.class, user);`
 * In browser, show current actuator metrics: http://localhost:8001/metrics
 * Tagged vs. Hierarchical structure.  Canonical example: how to get latency of all HTTP 200s in a hierarchical structure
 consisting of `{uri}.200`.
@@ -166,11 +172,11 @@ compile 'com.netflix.spectator:spectator-ext-sandbox:0.30.0'
 # Atlas (Taylor)
 
 * Start atlas with ./startAtlas.sh
-* Add `@EnableAtlas`
+* Add dependency `compile 'com.netflix.servo:servo-atlas:0.11.2'`
 * Restart Membership
 * Execute JMeter script
 * List tags http://localhost:7101/api/v1/tags
-* Retrieve a single png 
+* Retrieve a single png
 ```
 http://localhost:7101/api/v1/graph?q=name,rest,:eq,:avg
 http://localhost:7101/api/v1/graph?q=name,rest,:eq,statistic,count,:eq,:and,:avg
