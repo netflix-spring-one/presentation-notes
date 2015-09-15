@@ -101,6 +101,7 @@ interface MembershipRepository {
 
 # Hystrix (Jon)
 
+* Show Hystrix slide (Frank Underwood)
 * Add `compile 'org.springframework.cloud:spring-cloud-starter-hystrix'`
 * Add `@EnableHystrix`
 * Add `Set<Movie> familyRecommendations = Sets.newHashSet(new Movie("hook"), new Movie("the sandlot"));`
