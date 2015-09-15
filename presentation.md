@@ -176,6 +176,8 @@ http://localhost:7101/api/v1/graph?q=name,rest,:eq,:avg
 http://localhost:7101/api/v1/graph?q=name,rest,:eq,statistic,count,:eq,:and,:avg
 http://localhost:7101/api/v1/graph?q=name,rest,:eq,statistic,count,:eq,:and,:avg,(,bucket,),:by
 http://localhost:7101/api/v1/graph?q=name,rest,:eq,statistic,count,:eq,:and,:avg,(,bucket,),:by,:pct,:stack
+
+http://localhost:7101/api/v1/graph?q=metric,Queue.*,:re,:sum,(,name,appName,),:by
 ```
 * Demonstrate really basic stack language
 * Demonstrate dashboard generation
