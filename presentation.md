@@ -9,6 +9,7 @@
 
 # Simple Spring Boot App (Taylor)
 
+* (Should be on workshop branch, git checkout tags/start)
 * Slide [Collection<SpringBootApplication>]
 * Orient audience to the code
 * Start Eureka from `./gradlew bootRun > out.log`
@@ -31,16 +32,34 @@ the load balancer needs to have a route registered with it.
 * Add `eureka.client.serviceUrl.defaultZone: http://localhost:9000/eureka/` to application.yml (TRAILING SLASH IS IMPORTANT!)
 * Add `eureka.instance.hostname: theone`
 * Add `@EnableEurekaClient`
-* Remove RestTemplate bean
+* Add `@Primary` on RestTemplate bean - we don't want Ribbon just yet
 
 * Mention that Eureka is fault tolerant.  We deploy at least one per AZ per region.
+
+# Respond to Application Event when No Longer In Discovery (Taylor)
+
+* (git checkout tags/eureka)
+* Add dependency: `compile 'com.netflix.spring:spring-cloud-netflix-contrib:0.3.0'`
+* Add to Recommendations:
+```
+  @EventListener
+  public void onEurekaStatusDown(EurekaStatusChangedEvent event) {
+      if(event.getStatus() == InstanceInfo.InstanceStatus.DOWN || event.getStatus() == InstanceInfo.InstanceStatus.OUT_OF_SERVICE) {
+          System.out.println("Stop listening to queues and such...");
+      }
+  }
+```
+* Run `curl -X PUT http://localhost:9000/eureka/apps/recommendations/theone/status?value=OUT_OF_SERVICE` (can take about 15 secs)
+* [Eureka REST Operations](https://github.com/Netflix/eureka/wiki/Eureka-REST-operations)
 
 ---
 
 # Ribbon RestTemplate (Jon)
 
-* Add `membership.ribbon.DeploymentContextBasedVipAddresses: membership` to application.yml
-* Replace Hard-coded Link with VIP addresses
+* (git checkout tags/eureka-listener)
+* Add `members.ribbon.DeploymentContextBasedVipAddresses: membership` to application.yml
+* Remove RestTemplate bean
+* Replace Hard-coded Link with Ribbon client address
 * Restart Recommendations
 * Show both instances are up in Eureka server at http://localhost:9000
 
@@ -58,28 +77,9 @@ the load balancer needs to have a route registered with it.
 
 ---
 
-# Respond to Application Event when No Longer In Discovery (Taylor)
-
-* Demo executing REST request to drop an instance from discovery
-* Add to Recommendations:
-```
-@EventListener
-    public void onEurekaStatusDown(EurekaStatusChangedEvent event) {
-        if(event.getStatus() == InstanceInfo.InstanceStatus.DOWN || event.getStatus() == InstanceInfo.InstanceStatus.OUT_OF_SERVICE) {
-            System.out.println("Stop listening to queues and such...");
-        }
-    }
-```
-* Run `curl -X PUT http://localhost:9000/eureka/apps/recommendations/theone/status?value=OUT_OF_SERVICE`
-* [Eureka REST Operations](https://github.com/Netflix/eureka/wiki/Eureka-REST-operations)
-
-## RESULT
-* Stop listening to queues, etc.
-
----
-
 # Feign Client (Jon)
 
+* (git checkout tags/ribbon)
 * Somewhat simplifies the repository
 * Add `compile 'org.springframework.cloud:spring-cloud-starter-feign'`
 * Add `@EnableFeignClients`
