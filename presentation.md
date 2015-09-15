@@ -7,7 +7,7 @@
 
 ---
 
-# Simple Spring Boot App (Jon)
+# Simple Spring Boot App (Taylor)
 
 * Slide [Collection<SpringBootApplication>]
 * Orient audience to the code
@@ -32,10 +32,29 @@ the load balancer needs to have a route registered with it.
 * Add `eureka.instance.hostname: theone`
 * Add `@EnableEurekaClient`
 * Remove RestTemplate bean
+
+* Mention that Eureka is fault tolerant.  We deploy at least one per AZ per region.
+
+---
+
+# Ribbon RestTemplate (Jon)
+
+* Add `membership.ribbon.DeploymentContextBasedVipAddresses: membership` to application.yml
+* Replace Hard-coded Link with VIP addresses
 * Restart Recommendations
 * Show both instances are up in Eureka server at http://localhost:9000
 
-* Mention that Eureka is fault tolerant.  We deploy at least one per AZ per region.
+* No longer tied to load balancer.  No need to register route with load balancer.
+* Smarter load distribution?  e.g.
+    - zone avoidance rule,
+    - availability filter rule (filters those in circuit breaker trip state)
+    - keep track of response times and give preferential treatment to those instances that respond the fastest
+* Discuss benefit of stacks -- segmenting traffic by responsibility
+    - set eureka.instance.virtualHostName (default is application name), could set Membership to membership-batch or membership-api
+* All Ribbon get requests will be automatically retried if the request to the first node fails, PUTS/POSTS can be configured to do that
+    - Max number of retries on the same server (excluding the first try) `sample-client.ribbon.MaxAutoRetries=1`
+    - Max number of next servers to retry (excluding the first server) `sample-client.ribbon.MaxAutoRetriesNextServer=1`
+    - Whether all operations can be retried for this client `sample-client.ribbon.OkToRetryOnAllOperations=true`
 
 ---
 
@@ -56,20 +75,6 @@ the load balancer needs to have a route registered with it.
 
 ## RESULT
 * Stop listening to queues, etc.
-
----
-
-# Ribbon RestTemplate (Taylor)
-
-* Add `membership.ribbon.DeploymentContextBasedVipAddresses: membership` to application.yml
-* Replace Hard-coded Link with VIP addresses
-* No longer tied to load balancer.  No need to register route with load balancer.
-* Smarter load distribution?  e.g.
-    - zone avoidance rule,
-    - availability filter rule (filters those in circuit breaker trip state)
-    - keep track of response times and give preferential treatment to those instances that respond the fastest
-* Discuss benefit of stacks -- segmenting traffic by responsibility
-    - set eureka.instance.virtualHostName (default is application name), could set Membership to membership-batch or membership-api
 
 ---
 
@@ -108,6 +113,7 @@ Set<Movie> recommendationFallback(String user) {
 * Add: `RequestContextHolder.currentRequestAttributes()` -- relies on ThreadLocal and will fail
 * Start Recommendations and demonstrate how `currentRequestAttributes()` fails on ThreadLocal
 * Add: `@HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"),` -- @Transactional now works, ThreadLocal now works
+* Mention that SEMAPHORE strategy will cause timeoutInMilliseconds to NOT work! Hanging threads will remain hung but circuit breaker will be tripped.
 
 ---
 
@@ -134,11 +140,14 @@ Set<Movie> recommendationFallback(String user) {
 consisting of `{uri}.200`.
 * Add dependencies:
 ```
+compile 'org.springframework.boot:spring-boot-starter-aop'
 compile 'com.netflix.spectator:spectator-api:0.30.0'
 compile 'com.netflix.spectator:spectator-reg-servo:0.30.0'
 compile 'com.netflix.spectator:spectator-ext-sandbox:0.30.0'
 ```
-* Show /metrics endpoint after executing a series of REST requests.
+* Add `autoconfigure.exclude: org.springframework.cloud.netflix.servo.ServoMetricsAutoConfiguration`
+* Execute JMeter script
+* Show /metrics endpoint
 
 * What should not be a tag?  Example: customerId because of the combinatorial explosion of tags.
 * Add a bad tag and see what happens in /metrics
