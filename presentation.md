@@ -1,4 +1,4 @@
-# Why does the audience care?
+# Why does the audience care? (Jon)
 
 * Make a Spring Boot app *cloud-ready* even if you are not yet *cloud-native*
 * Spring Cloud is a misnomer.  Everything we will show you can be stood up in a private DC.
@@ -7,7 +7,7 @@
 
 ---
 
-# Simple Spring Boot App
+# Simple Spring Boot App (Jon)
 
 * Slide [Collection<SpringBootApplication>]
 * Orient audience to the code
@@ -25,7 +25,7 @@ the load balancer needs to have a route registered with it.
 
 ---
 
-# Add Eureka
+# Add Eureka (Jon)
 
 * Add `compile 'org.springframework.cloud:spring-cloud-starter-eureka'`
 * Add `eureka.client.serviceUrl.defaultZone: http://localhost:9000/eureka/` to application.yml (TRAILING SLASH IS IMPORTANT!)
@@ -39,7 +39,7 @@ the load balancer needs to have a route registered with it.
 
 ---
 
-# Respond to Application Event when No Longer In Discovery
+# Respond to Application Event when No Longer In Discovery (Taylor)
 
 * Demo executing REST request to drop an instance from discovery
 * Add to Recommendations:
@@ -59,7 +59,7 @@ the load balancer needs to have a route registered with it.
 
 ---
 
-# Ribbon RestTemplate
+# Ribbon RestTemplate (Taylor)
 
 * Add `membership.ribbon.DeploymentContextBasedVipAddresses: membership` to application.yml
 * Replace Hard-coded Link with VIP addresses
@@ -73,7 +73,7 @@ the load balancer needs to have a route registered with it.
 
 ---
 
-# Feign Client
+# Feign Client (Jon)
 
 * Somewhat simplifies the repository
 * Add `compile 'org.springframework.cloud:spring-cloud-starter-feign'`
@@ -89,7 +89,7 @@ interface MembershipRepository {
 
 ---
 
-# Hystrix
+# Hystrix (Jon)
 
 * Add `compile 'org.springframework.cloud:spring-cloud-starter-hystrix'`
 * Add `@EnableHystrix`
@@ -111,7 +111,7 @@ Set<Movie> recommendationFallback(String user) {
 
 ---
 
-# Hystrix dashboard
+# Hystrix dashboard (Jon)
 
 * Start HystrixDashboard
 * In browser, navigate to http://localhost:9001/hystrix
@@ -120,14 +120,14 @@ Set<Movie> recommendationFallback(String user) {
 
 ---
 
-# Turbine
+# Turbine (Jon)
 
 * Start Turbine from IDE
 * In hystrix dashboard, enter: http://localhost:9002/turbine.stream?cluster=SAMPLE
 
 ---
 
-# Spectator Metrics
+# Spectator Metrics (Taylor)
 
 * In browser, show current actuator metrics: http://localhost:8001/metrics
 * Tagged vs. Hierarchical structure.  Canonical example: how to get latency of all HTTP 200s in a hierarchical structure
@@ -149,7 +149,7 @@ compile 'com.netflix.spectator:spectator-ext-sandbox:0.30.0'
 
 ---
 
-# Atlas
+# Atlas (Taylor)
 
 * Start atlas with ./startAtlas.sh
 * Add `@EnableAtlas`
@@ -163,7 +163,7 @@ compile 'com.netflix.spectator:spectator-ext-sandbox:0.30.0'
 
 ---
 
-# What about Zuul
+# What about Zuul (Jon)
 
 * Our premise has been that client-side load balancing is an architectural alternative to the typical load-balancer-per-server model.  Ribbon+Eureka folds load balancing into the service call itself.
 * So why Zuul, a router distinct from the operation of any particular service?
